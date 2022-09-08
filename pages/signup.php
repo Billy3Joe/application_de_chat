@@ -1,100 +1,122 @@
-<h1>Signup page</h1>
-<div class="row">
-    <div class="col l4 m6 s12 offset-l4 offset-m3">
-        <div class="card-panel">
-            <div class="row">
-                <div class="col s6 offset-s3">
-                  <img src="../img/login/admin.png" alt="Administrateur" width="100%">
-                </div>
-            </div>
+  <?php 
+   //Si l'utilisateur est déjà connecté, il ne peut plus aller vers la page singnup
+    if (isLogged()==1) {
+      header("Location: index.php?page=home");
+    } 
+   ?>
 
-            <h4 class="center-align">
-                Se connecter
-            </h4>
-
-            <?php 
-              
-              if (isset($_POST['submit'])){
-
-                  $email = htmlspecialchars(trim($_POST['email']));
-                  $password = htmlspecialchars(trim($_POST['password']));
-                  $errors =[];
-
-                  if(!empty($_POST['email']) AND !empty($_POST['password'])) {
-
-                      $email_par_defaut ="billykamze3@gmail.com";
-                      $password_par_defaut ="admin1234";
-                      $email_saisi =htmlspecialchars($_POST['email']);
-                      $password_saisi =htmlspecialchars(sha1($_POST['password']));
-
-                   
-                      if($email_saisi != $email_par_defaut && $password_saisi != $password_par_defaut) {
-                        $errors = "Email et mot de pass incorrect !";
-                          
-                      }else{
-                      
-                       //Créons une session à l'utilisateur afin qu'il ne soit pas déconnecté par la suite.
-                       $_SESSION['admin'] = $email;
+   <h1 style="color:#888;">Register tchat</h1>
+    <br>
     
-                       //Rédirection vers la page dashboard
-                       header("Location:index.php?page=dashboard");
-                      }
-                      
-                     
-                    
-                  }else{
-                    $errors = "Veillez remplir tous les champs !";
-                  }
-                    
-                  // S'il y'a des érreurs ou si les erreurs existent
-                  if (!empty($errors)) {
+    <?php
+        // si le form a été posté (rendre fonctionnelle les champs crées)
+        if (isset($_POST['submit'])){
+            
+            $name = htmlspecialchars(trim($_POST['name']));
+            $email = htmlspecialchars(trim($_POST['email']));
+            $password = htmlspecialchars(trim($_POST['password']));
+            // $errors =[];
+            // je verifie si je récupère bien les valeurs des champs
+            //print_r($_POST);
+            //je defini une variable pour afficher les erreurs
+             $errors="";
 
-                      //Dans ce cas je les affichent
+             //Si le nom n'est pas trop court ou trop long
+             if(empty($name) && empty($email) && empty($password)){
+                $errors .= '<p> Veillez remplir tous les champs.</p>';
+        
+            }
+
+            //Si le nom n'est pas trop court ou trop long
+            if(strlen($name) <3 || strlen($name) > 20){
+            $errors .= '<p> Taille de nom invalide.</p>';
+            }
+
+            //Si les caractères utilisées dans le champs nom sont valides  [regex]
+            if(!preg_match('#^[a-zA-Z0-9._-]+$#', $name)){
+                $errors .='<p> Format de nom invalide</p>';
+            }
+
+            //je verifie si l'email n'est pas deja present dans la base
+            $r =$db -> query ("SELECT * FROM users WHERE email = '$email'");
+
+            // s'il y a un ou plusieurs resultats
+            if($r->rowCount() >= 1 ) {
+                    $errors .= '<p>Email déjà utilisé.</p>';
+                }
+        
+
+            // Je gère les problèmes d'apostrophes pour chaque champs grâce à une boucle
+            foreach ($_POST as $indice => $valeur) {
+                $_POST[$indice] = addslashes($valeur);
+            }
+
+            //je hash le mot de passe
+            $password = password_hash($password, PASSWORD_DEFAULT);
+
+            // si $erreur est vide (fonction empty() verifie si une variable est vide):
+                if(empty($errors)){
+                    //j'envoie les infos dans la table en bdd
+                    $db->exec("INSERT INTO users (name, email, password)VALUES 
+                    ('$name', '$email','$password')");
+
                     ?>
-                      <div class="card red">
-                          <div class="card-content white-text">
+                    <div class="card green">
+                        <div class="card-content white-text">
+                            <!-- j'ajoute un message de validation -->
+                            <?= $valide='<p>Inscription validée.</p>'?>
+                        </div>
+                    </div>
 
-                          <!-- On parcour tous les erreus et les affichent -->
-                          <?php 
-                          
-                              echo $errors."<br>";
-                        
-                          ?>
-
-                          </div>
-                      </div>
                     <?php
+                  
+                }else {
 
-                  }
-              }  
-           
-            ?>
+                 //j'ajoute le contenu de $erreur a l'interieur de $content:
+                  ?>
+                    <div class="card red">
+                        <div class="card-content white-text">
+                            <!-- j'ajoute un message de validation -->
+                            <?= $content=$errors?>
+                        </div>
+                   </div>
+                  <?php
+               
+                }
+                   
+        }
 
-            <form action="" method="POST">
-               <div class="row">
-                 <div class="input-field cold s12">
-                   <input type="email" id="email" name="email">
-                   <label for="eamil">Adresse email</label>
-                 </div>
+
+    ?>
+       
+
+       <form action="" method="POST">
+           <div class="row">
+              <div class="input-field col s12">
+                <input type="text" name="name" id="name">
+                <label for="name">Nom</label>
+              </div>
+
+              <div class="input-field col s12">
+                 <input type="email" name="email" id="email">
+                 <label for="email">Adresse email</label>
+              </div>
+
+              <div class="input-field col s12">
+                 <input type="password" name="password" id="password">
+                 <label for="password">Adresse email</label>
+              </div>
+            
+              <div class="col s12">
+                  <button type="submit" name="submit" class="waves-effect waves-light btn light-blue">
+                    <i class="material-icons left">perm_identity</i>
+                    Se connecter
+                  </button>
+
+                   <br/><br/>
+                   <a style="color:green;">Déjà inscrit?</a> 
+                   <a style="text-decoration: underline;" href="index.php?page=signin">Se connecter</a>
                </div>
-
-               <div class="row">
-                 <div class="input-field cold s12">
-                   <input type="password" id="password" name="password">
-                   <label for="password">Mot de passe</label>
-                 </div>
-               </div>
-
-              <center>
-                    <button type="submit" name="submit" class="waves-effect waves-light btn light-blue">
-                        <i class="material-icons left">perm_identity</i>
-                        Se connecter
-                    </button>
-
-                    <br/><br/>
-                    <a href="index.php?page=new">Nouveau modérateur</a>
-               </center>
-            </form>
-        </div>
-    </div>
-</div>
+            </div>
+          </form>
+          

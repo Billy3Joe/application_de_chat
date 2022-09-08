@@ -6,10 +6,10 @@
     //Je verifie si la page est presente et n'est pas vide
     if (isset($_GET['page']) && !empty($_GET['page'])) {
 
-       if (in_array($_GET['page'].'.php', $pages)) {
+       if(in_array($_GET['page'].'.php', $pages)) {
         //Dans le cas ou la page se trouve dans le dossier pages, elle renvoit la page vers l'URL
         $page = $_GET['page'];
-
+          
        }else {
         //Sinon elle renvoit la page erreur ie que la page n'existe pas dans le dossier pages
         $page='error';
@@ -50,20 +50,25 @@
 
     <body>
      
-     
+       <?php 
+          if ($page != 'signin' && $page != 'signup' && !isset($_SESSION['email'])) {
+            header("Location: index.php?page=signin");
+          } 
+        ?>
         
         <?php include 'body/topbar.php' ?>
 
-        <div class="container">
+         <div class="container">
             <!-- J'appel tous les pages incluent dans le dossier page -->
             <?php include 'pages/'.$page.'.php'; ?>
-        </div>
+         </div>
 
+         <script src="text/javascript" src="js/signup.func.js"></script>
          <script src="text/javascript" src="js/signin.func.js"></script>
          <!--Import jQuery before materialize.js-->
          <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
          <!--JavaScript at end of body for optimized loading-->
          <script type="text/javascript" src="js/materialize.js"></script>
-         
+
     </body>
   </html>

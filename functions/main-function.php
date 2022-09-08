@@ -3,9 +3,12 @@
     session_start();
     
     $dbhost = "localhost";
-    $dbname = "chat";
+    $dbname = "tchat";
     $dbuser = 'root';
     $dbpswd = "";
+    
+    //Variable contenant les différents érreurs
+    $content = "";
 
   try {
       $db = new PDO("mysql:host=$dbhost;dbname=$dbname", 
@@ -16,6 +19,17 @@
   }catch(PDOException $e){
 
     echo "Une erreur est survenue lors de la connexion à la base de données : ". $e->getMessage();
+  }
+
+  //Fonction pour gérer l'affichage du menu de la navbar
+  function isLogged(){
+   if (isset($_SESSION['email'])) {
+    $logged = 1;
+   }else {
+    $logged = 0;
+   }
+
+   return $logged;
   }
 
 ?>
