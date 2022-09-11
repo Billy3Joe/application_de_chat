@@ -104,7 +104,7 @@
 
               <div class="input-field col s12">
                  <input type="password" name="password" id="password">
-                 <label for="password">Adresse email</label>
+                 <label for="password">Mot de passe</label>
               </div>
             
               <div class="col s12">

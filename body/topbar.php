@@ -30,7 +30,7 @@
                           <!-- Cest une condition ternaire en php permettant de rendre les liens des pages active lorsqu'on clique dessus -->
                            <li class="<?php echo ($page=="")?"active" : ""; ?>">
                                 <a href="index.php?page=" class="parametres">
-                                    <i class="material-icons">textsms</i>
+                                    <i class="material-icons">chat</i>
                                 </a>
                             </li>
 
